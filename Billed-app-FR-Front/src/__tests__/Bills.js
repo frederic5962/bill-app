@@ -3,13 +3,15 @@
  */
 
 import '@testing-library/jest-dom';
-import { screen, waitFor } from '@testing-library/dom';
+import { screen, waitFor, fireEvent } from '@testing-library/dom';
 import BillsUI from '../views/BillsUI.js';
 import { bills } from '../fixtures/bills.js';
 import { ROUTES_PATH } from '../constants/routes.js';
 import { localStorageMock } from '../__mocks__/localStorage.js';
 import router from '../app/Router.js';
-import mockStore from "../__mocks__/store";
+import Bills from '../containers/Bills.js';
+
+
 
 describe('Given I am connected as an employee', () => {
   // Avant chaque test, on configure l'environnement nécessaire
@@ -64,4 +66,28 @@ describe('Given I am connected as an employee', () => {
       expect(dates.map(date => new Date(date))).toEqual(datesSorted);
     });
   });
+  test("Should navigate to NewBill page when the 'New Bill' button is clicked", () => {
+    // Injecter le HTML pour la page des factures
+    document.body.innerHTML = BillsUI({ data: bills });
+  
+    // Simuler une fonction de navigation
+    const mockNavigate = jest.fn();
+  
+    // Créer une instance de la classe Bills
+    const billsPage = new Bills({
+      document,
+      onNavigate: mockNavigate,
+      store: null,
+      localStorage: window.localStorage,
+    });
+  
+    // Trouver et cliquer sur le bouton "Nouvelle note de frais"
+    const newBillBtn = screen.getByTestId("btn-new-bill");
+    fireEvent.click(newBillBtn);
+  
+    // Vérifier si la navigation a été appelée avec le bon chemin
+    expect(mockNavigate).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
+  });  
 });
+
