@@ -5,6 +5,8 @@ import VerticalLayout from './VerticalLayout.js';
 import Actions from './Actions.js';
 
 const row = bill => {
+  console.log('URL fileUrl :', bill.fileUrl);
+
   return `
     <tr>
       <td>${bill.type}</td>
@@ -13,11 +15,14 @@ const row = bill => {
       <td>${bill.amount} €</td>
       <td>${bill.status}</td>
       <td>
-        ${Actions(bill.fileUrl)}
+        <div data-testid="icon-eye" data-bill-url="${bill.fileUrl}">
+          ${Actions(bill.fileUrl)}
+        </div>
       </td>
     </tr>
     `;
 };
+
 
 const rows = data => {
   if (!data || !data.length) return '';
