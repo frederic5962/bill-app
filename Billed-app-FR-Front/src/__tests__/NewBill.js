@@ -225,8 +225,10 @@ describe('Given I am connected as an employee', () => {
         localStorage: window.localStorage,
       });
 
-      // Appeler directement updateBill avec des données fictives
+      console.log('Before calling updateBill');
       await newBill.updateBill({ type: 'Transport', amount: 100 });
+      console.log('After calling updateBill');
+      
 
       // Vérifie si la méthode `update` a été appelée
       expect(mockStore.bills().update).toHaveBeenCalled();
@@ -235,4 +237,84 @@ describe('Given I am connected as an employee', () => {
       expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH['Bills']);
     });
   });
-});
+  describe('When I submit the form with valid inputs', () => {
+    test('Then it should call updateBill with the correct data', () => {
+      document.body.innerHTML = NewBillUI();
+      
+      const onNavigate = jest.fn();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+  
+      // Simule des valeurs valides pour le formulaire
+      fireEvent.change(screen.getByTestId('expense-type'), { target: { value: 'Transport' } });
+      fireEvent.change(screen.getByTestId('expense-name'), { target: { value: 'Taxi' } });
+      fireEvent.change(screen.getByTestId('amount'), { target: { value: '100' } });
+      fireEvent.change(screen.getByTestId('datepicker'), { target: { value: '2023-05-15' } });
+  
+      // Simule la soumission du formulaire
+      const form = screen.getByTestId('form-new-bill');
+      fireEvent.submit(form);
+  
+      // Vérifie que `updateBill` est appelé avec les bonnes données
+      expect(mockStore.bills().update).toHaveBeenCalled();
+    });
+  });  
+  describe('When I submit the form without fileUrl', () => {
+    test('Then it should display an alert', () => {
+      document.body.innerHTML = NewBillUI();
+  
+      jest.spyOn(window, 'alert').mockImplementation(() => {});
+  
+      const onNavigate = jest.fn();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+  
+      fireEvent.change(screen.getByTestId('expense-type'), { target: { value: 'Transport' } });
+      fireEvent.change(screen.getByTestId('expense-name'), { target: { value: 'Taxi' } });
+      fireEvent.change(screen.getByTestId('amount'), { target: { value: '100' } });
+      fireEvent.change(screen.getByTestId('datepicker'), { target: { value: '2023-05-15' } });
+      // Ne définis pas `fileUrl`
+  
+      const form = screen.getByTestId('form-new-bill');
+      fireEvent.submit(form);
+  
+      expect(window.alert).toHaveBeenCalledWith('Veuillez remplir tous les champs obligatoires.');
+    });
+  });  
+  describe('When fileUrl is missing', () => {
+    test('Then it should display an alert', () => {
+      document.body.innerHTML = NewBillUI();
+  
+      jest.spyOn(window, 'alert').mockImplementation(() => {});
+  
+      const onNavigate = jest.fn();
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+  
+      fireEvent.change(screen.getByTestId('expense-type'), { target: { value: 'Transport' } });
+      fireEvent.change(screen.getByTestId('expense-name'), { target: { value: 'Taxi' } });
+      fireEvent.change(screen.getByTestId('amount'), { target: { value: '100' } });
+      fireEvent.change(screen.getByTestId('datepicker'), { target: { value: '2023-05-15' } });
+  
+      // Ne pas définir `fileUrl`
+      newBill.fileUrl = null;
+  
+      const form = screen.getByTestId('form-new-bill');
+      fireEvent.submit(form);
+  
+      expect(window.alert).toHaveBeenCalledWith('Veuillez remplir tous les champs obligatoires.');
+    });
+  });  
+  });  

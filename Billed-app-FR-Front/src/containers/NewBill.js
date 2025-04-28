@@ -98,6 +98,7 @@ export default class NewBill {
       fileName: this.fileName,
       status: 'pending',
     };
+    
 
     this.updateBill(bill);
     this.onNavigate(ROUTES_PATH['Bills']);
@@ -105,6 +106,8 @@ export default class NewBill {
 
   // not need to cover this function by tests
   updateBill = bill => {
+    console.log('Calling store.bills().update');
+
     if (this.store) {
       this.store
         .bills()
@@ -112,7 +115,10 @@ export default class NewBill {
         .then(() => {
           this.onNavigate(ROUTES_PATH['Bills']);
         })
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error);
+          console.log('Caught error:', error);
+        });
     }
   };
 }
