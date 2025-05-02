@@ -1,15 +1,17 @@
-import { ROUTES_PATH } from '../constants/routes.js';
-import Logout from './Logout.js';
+import { ROUTES_PATH } from "../constants/routes.js";
+import Logout from "./Logout.js";
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-    const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`);
-    formNewBill.addEventListener('submit', this.handleSubmit);
+    const formNewBill = this.document.querySelector(
+      `form[data-testid="form-new-bill"]`
+    );
+    formNewBill.addEventListener("submit", this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    file.addEventListener('change', this.handleChangeFile);
+    file.addEventListener("change", this.handleChangeFile);
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
@@ -17,34 +19,34 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate });
   }
 
-  handleChangeFile = e => {
+  handleChangeFile = (e) => {
     e.preventDefault();
 
     // Sélection du fichier
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    console.log('File selected:', file);
+    console.log("File selected:", file);
 
     // Vérification du type de fichier
-    const allowedExtensions = ['image/jpeg', 'image/png'];
+    const allowedExtensions = ["image/jpeg", "image/png"];
     if (!allowedExtensions.includes(file.type)) {
-      alert('Seuls les fichiers .jpg, .jpeg et .png sont autorisés.');
-      fileInput.value = ''; // Réinitialiser la sélection de fichier
+      alert("Seuls les fichiers .jpg, .jpeg et .png sont autorisés.");
+      fileInput.value = ""; // Réinitialiser la sélection de fichier
       return;
     }
 
     // Mise à jour de la propriété files
     this.files = [file];
-    console.log('Files array after update:', this.files);
+    
 
     // Poursuite de la logique si le fichier est valide
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-    console.log('File name:', fileName);
+    console.log("File name:", fileName);
     const formData = new FormData();
-    const email = JSON.parse(localStorage.getItem('user')).email;
-    formData.append('file', file);
-    formData.append('email', email);
+    const email = JSON.parse(localStorage.getItem("user")).email;
+    formData.append("file", file);
+    formData.append("email", email);
 
     this.store
       .bills()
@@ -55,70 +57,50 @@ export default class NewBill {
         },
       })
       .then(({ fileUrl, key }) => {
-        console.log('File URL:', fileUrl);
-        console.log('Key:', key);
+        console.log("File URL:", fileUrl);
+        console.log("Key:", key);
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   };
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-
-    // Vérification des champs obligatoires
-    const type = e.target.querySelector(`select[data-testid="expense-type"]`).value;
-    const name = e.target.querySelector(`input[data-testid="expense-name"]`).value.trim();
-    const amount = e.target.querySelector(`input[data-testid="amount"]`).value;
-    const date = e.target.querySelector(`input[data-testid="datepicker"]`).value;
-    const fileUrl = this.fileUrl;
-
-    if (!type || !name || !amount || !date || !fileUrl) {
-      alert('Veuillez remplir tous les champs obligatoires.');
-      return;
-    }
-
-    const user = localStorage.getItem('user');
-    if (!user) {
-      alert('Utilisateur non trouvé, veuillez vous reconnecter.');
-      return;
-    }
-    const email = JSON.parse(user).email;
-
+  
+    const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
-      type,
-      name,
-      amount: parseInt(amount),
-      date,
+      type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
+      name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
+      amount: parseInt(
+        e.target.querySelector(`input[data-testid="amount"]`).value
+      ),
+      date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
       vat: e.target.querySelector(`input[data-testid="vat"]`).value,
-      pct: parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) || 20,
-      commentary: e.target.querySelector(`textarea[data-testid="commentary"]`).value,
-      fileUrl,
+      pct:
+        parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) ||
+        20,
+      commentary: e.target.querySelector(`textarea[data-testid="commentary"]`)
+        .value,
+      fileUrl: this.fileUrl,
       fileName: this.fileName,
-      status: 'pending',
+      status: "pending",
     };
-    
-
     this.updateBill(bill);
-    this.onNavigate(ROUTES_PATH['Bills']);
+    this.onNavigate(ROUTES_PATH["Bills"]);
   };
 
   // not need to cover this function by tests
-  updateBill = bill => {
-    console.log('Calling store.bills().update');
-
+  updateBill = (bill) => {
     if (this.store) {
       this.store
         .bills()
         .update({ data: JSON.stringify(bill), selector: this.billId })
         .then(() => {
-          this.onNavigate(ROUTES_PATH['Bills']);
+          this.onNavigate(ROUTES_PATH["Bills"]);
         })
-        .catch(error => {
-          console.error(error);
-          console.log('Caught error:', error);
-        });
+        .catch((error) => console.error(error));
     }
   };
 }
