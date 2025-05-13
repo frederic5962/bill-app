@@ -5,8 +5,6 @@ import VerticalLayout from './VerticalLayout.js';
 import Actions from './Actions.js';
 
 const row = bill => {
-  console.log('URL fileUrl :', bill.fileUrl);
-
   return `
     <tr>
       <td>${bill.type}</td>

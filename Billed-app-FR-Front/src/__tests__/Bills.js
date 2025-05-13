@@ -13,6 +13,15 @@ import Bills from '../containers/Bills.js';
 import userEvent from '@testing-library/user-event';
 import { formatDate, formatStatus } from '../app/format.js';
 
+const mockStore = {
+  bills: () => ({
+    list: jest.fn().mockResolvedValue([]),
+  }),
+};
+
+
+
+
 
 describe('Given I am connected as an employee', () => {
   // Avant chaque test, on configure l'environnement nécessaire
