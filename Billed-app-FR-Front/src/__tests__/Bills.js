@@ -13,13 +13,6 @@ import Bills from '../containers/Bills.js';
 import userEvent from '@testing-library/user-event';
 import { formatDate, formatStatus } from '../app/format.js';
 
-const mockStore = {
-  bills: () => ({
-    list: jest.fn().mockResolvedValue([]),
-  }),
-};
-
-
 
 
 
@@ -36,7 +29,6 @@ describe('Given I am connected as an employee', () => {
         status: 'connected',
       })
     );
-
     // Crée un conteneur racine pour le DOM et initialise le routeur
     document.body.innerHTML = `<div id="root"></div>`;
     router();
@@ -122,8 +114,9 @@ test('When I click on the icon, the modal should open', () => {
   // On vérifie que la fonction modal a bien été appelée
   expect($.fn.modal).toHaveBeenCalled();
 });
+
 describe('HTTP Error Testing', () => {
-  // Test pour une erreur 404
+  // Test pour une erreur 404 ressource non trouvée
   test('should return a 404 error if the resource is not found', async () => {
     const mockResponse = {
       status: 404,
@@ -136,7 +129,7 @@ describe('HTTP Error Testing', () => {
     expect(response.statusText).toBe('Not Found');
   });
 
-  // Test pour une erreur 500
+  // Test pour une erreur 500 probleme de serveur
   test('should return a 500 error if there is a server problem', async () => {
     const mockResponse = {
       status: 500,

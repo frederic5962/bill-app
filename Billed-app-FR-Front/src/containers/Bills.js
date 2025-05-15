@@ -38,19 +38,26 @@ export default class {
         .bills()
         .list()
         .then(snapshot => {
-          const bills = [...snapshot].sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
+          console.log("Factures récupérées :", snapshot);
+          const bills = snapshot
+  
+  .sort((a, b) => new Date(a.date) - new Date(b.date));
 
+
+        
           return bills.map(doc => {
             try {
+              if (!doc.date) {
+                console.warn('Facture sans date détectée :', doc);
+              }
+
               return {
                 ...doc,
-                date: formatDate(doc.date),
+                date: doc.date ? formatDate(doc.date) : 'Date inconnue',
                 status: formatStatus(doc.status),
               };
             } catch (e) {
-              console.log(e, 'for', doc);
+              console.error('Erreur de formatage pour', doc, e);
               return {
                 ...doc,
                 date: doc.date,
@@ -58,12 +65,11 @@ export default class {
               };
             }
           });
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des factures :', error);
+          return [];
         });
     }
   };
 }
-const testDates = ['2015-02-11', '2021-11-22', '2021-11-22', '2021-11-22', '2025-04-14'];
-console.log(
-  'Test tri:',
-  testDates.sort((a, b) => new Date(a) - new Date(b))
-);

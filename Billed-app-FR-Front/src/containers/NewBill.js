@@ -28,7 +28,7 @@ export default class NewBill {
     console.log("File selected:", file);
 
     // Vérification du type de fichier
-    const allowedExtensions = ["image/jpeg", "image/png"];
+    const allowedExtensions = ["image/jpeg", "image/png", "image/jpg"];
     if (!allowedExtensions.includes(file.type)) {
       alert("Seuls les fichiers .jpg, .jpeg et .png sont autorisés.");
       fileInput.value = ""; // Réinitialiser la sélection de fichier
@@ -67,7 +67,8 @@ export default class NewBill {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-  
+  console.log("Facture avant enregistrement :", bill);
+
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
@@ -77,6 +78,7 @@ export default class NewBill {
         e.target.querySelector(`input[data-testid="amount"]`).value
       ),
       date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
+      
       vat: e.target.querySelector(`input[data-testid="vat"]`).value,
       pct:
         parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) ||
@@ -87,9 +89,16 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
-    this.updateBill(bill);
-    this.onNavigate(ROUTES_PATH["Bills"]);
-  };
+ console.log("Facture soumise :", bill);
+
+  if (!bill.name || !bill.type || !bill.date) {
+    alert("Tous les champs doivent être remplis avant d'enregistrer la facture.");
+    return;
+  }
+
+  this.updateBill(bill);
+  this.onNavigate(ROUTES_PATH["Bills"]);
+};
 
   // not need to cover this function by tests
   updateBill = (bill) => {
