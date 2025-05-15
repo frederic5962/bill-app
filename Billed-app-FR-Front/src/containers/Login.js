@@ -60,6 +60,7 @@ export default class Login {
   }
 
   handleSubmitAdmin = e => {
+    console.log(e);
     e.preventDefault();
 
     const emailInput = e.target.querySelector(`input[data-testid="admin-email-input"]`);
@@ -74,7 +75,7 @@ export default class Login {
       password: passwordInput.value,
       status: 'connected',
     };
-
+console.log(user);
     if (!this.isValidEmail(user.email)) {
       errorMessage.textContent = 'Invalid email format';
       return;
