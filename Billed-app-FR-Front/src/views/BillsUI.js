@@ -21,24 +21,11 @@ const row = bill => {
     `;
 };
 
-
 const rows = data => {
   if (!data || !data.length) return '';
 
-  // Afficher les données AVANT tri
-  console.log(
-    'Factures AVANT tri :',
-    data.map(bill => bill.date)
-  );
-
   // Trier les données par date, du plus ancien au plus récent
   const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Afficher les données APRÈS tri
-  console.log(
-    'Factures APRÈS tri :',
-    sortedData.map(bill => bill.date)
-  );
 
   return sortedData.map(bill => row(bill)).join('');
 };

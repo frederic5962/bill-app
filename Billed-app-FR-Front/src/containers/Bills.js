@@ -38,7 +38,6 @@ export default class {
         .bills()
         .list()
         .then(snapshot => {
-          console.log("Factures récupérées :", snapshot);
           const bills = snapshot
   
   .sort((a, b) => new Date(a.date) - new Date(b.date));

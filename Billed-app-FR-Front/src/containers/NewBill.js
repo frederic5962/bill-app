@@ -21,11 +21,10 @@ export default class NewBill {
 
   handleChangeFile = (e) => {
     e.preventDefault();
-
     // Sélection du fichier
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    console.log("File selected:", file);
+   
 
     // Vérification du type de fichier
     const allowedExtensions = ["image/jpeg", "image/png", "image/jpg"];
@@ -42,7 +41,6 @@ export default class NewBill {
     // Poursuite de la logique si le fichier est valide
     const filePath = e.target.value.split(/\\/g);
     const fileName = filePath[filePath.length - 1];
-    console.log("File name:", fileName);
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
     formData.append("file", file);
@@ -56,9 +54,7 @@ export default class NewBill {
           noContentType: true,
         },
       })
-      .then(({ fileUrl, key }) => {
-        console.log("File URL:", fileUrl);
-        console.log("Key:", key);
+      .then(({ fileUrl, key }) => {     
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
@@ -67,7 +63,6 @@ export default class NewBill {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-  console.log("Facture avant enregistrement :", bill);
 
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
@@ -89,7 +84,6 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
- console.log("Facture soumise :", bill);
 
   if (!bill.name || !bill.type || !bill.date) {
     alert("Tous les champs doivent être remplis avant d'enregistrer la facture.");
